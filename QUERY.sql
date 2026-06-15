@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS matches(
 CREATE TABLE IF NOT EXISTS bookings(
     booking_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(user_id),
-    match_id INT REFERENCES matched(match_id),
+    match_id INT REFERENCES matches(match_id),
     seat_number VARCHAR(50),
     payment_status VARCHAR(50),
     total_cost DECIMAL
@@ -32,15 +32,36 @@ INSERT INTO users(user_id, full_name, email, role, phone_number) VALUES
 
 
 INSERT INTO matches(match_id, fixture, tournament_category, base_ticket_price, match_status) VALUES
-(101, 'Real Madrid vs Barcelona', 'Champions League', 150, 'Available'),
-(102, 'Man City vs Liverpool', 'Premier League', 120, 'Selling Fast'),
-(103, 'Bayern Munich vs PSG', 'Champions League', 130, 'Available'), 
-(104, 'AC Milan vs Inter Milan', 'Serie A', 90, 'Sold Out'),
-(105, 'Juventus vs Rome', 'Serie A', 80, 'Available');
+(101, 'Real Madrid vs Barcelona', 'Champions League', 150.00, 'Available'),
+(102, 'Man City vs Liverpool', 'Premier League', 120.00, 'Selling Fast'),
+(103, 'Bayern Munich vs PSG', 'Champions League', 130.00, 'Available'), 
+(104, 'AC Milan vs Inter Milan', 'Serie A', 90.00, 'Sold Out'),
+(105, 'Juventus vs Rome', 'Serie A', 80.00, 'Available');
 
 INSERT INTO bookings(booking_id, user_id, match_id, seat_number, payment_status, total_cost) VALUES
-(501, 1, 101, 'A-12', 'Confirmed', 150),
-(502, 1, 102, 'B-04', 'Confirmed', 120),
-(502, 2, 101, 'A-13', 'Confirmed', 150),
-(504, 2, 101, 'NUll', 'NULL', 150), 
-(505, 3, 120, 'C-20', 'Pending', 120);
+(501, 1, 101, 'A-12', 'Confirmed', 150.00),
+(502, 1, 102, 'B-04', 'Confirmed', 120.00),
+(502, 2, 101, 'A-13', 'Confirmed', 150.00),
+(504, 2, 101, 'NUll', 'NULL', 150.00), 
+(505, 3, 120, 'C-20', 'Pending', 120.00);
+
+
+//Query-1
+SELECT match_id, fixture, base_ticket_price FROM matches
+WHERE match_status = 'Available';
+
+//Query-2
+SELECT user_id, full_name, email FROM users
+WHERE full_name ILIKE 'Tanvir%' OR ILIKE '%Haque%';
+
+//Query-3
+SELECT booking_id, user_id, match_id
+COALESCE(payment_status, 'Action Required') AS systematic_status
+FROM bookings 
+WHERE payment_status IS NULL;
+
+
+//Query-4
+SELECT booking_id, full_name, fixture, total_cost FROM bookings
+INNER JOIN users ON booking_id = user_id
+INNER JOIN matches ON booking_id = match_id;
