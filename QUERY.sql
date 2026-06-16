@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users(
     full_name VARCHAR(50) NOT NULL,
     email VARCHAR(50) UNIQUE,
     role VARCHAR(50),
-    phone_number INT
+    phone_number VARCHAR(20)
 );
 
 CREATE TABLE IF NOT EXISTS matches(
@@ -25,9 +25,9 @@ CREATE TABLE IF NOT EXISTS bookings(
 );
 
 INSERT INTO users(user_id, full_name, email, role, phone_number) VALUES
-(1, 'Tanvir Rahman', 'tanvir@gmail.com', 'Football Fan', +8801711111111),
-(2, 'Asif Haque', 'asif@gmail.com', 'Football Fan', +88017222222222), 
-(3, 'Sajjad Rahman', 'sajjad@gmail.com', 'Ticket Manager', +8801333333333),
+(1, 'Tanvir Rahman', 'tanvir@gmail.com', 'Football Fan', '+88017111111'),
+(2, 'Asif Haque', 'asif@gmail.com', 'Football Fan', '+880172222222'), 
+(3, 'Sajjad Rahman', 'sajjad@gmail.com', 'Ticket Manager', '+8801333333'),
 (4, 'Jannat Ara', 'jannat@gmail.com', 'Football Fan', NULL);
 
 
@@ -41,27 +41,27 @@ INSERT INTO matches(match_id, fixture, tournament_category, base_ticket_price, m
 INSERT INTO bookings(booking_id, user_id, match_id, seat_number, payment_status, total_cost) VALUES
 (501, 1, 101, 'A-12', 'Confirmed', 150.00),
 (502, 1, 102, 'B-04', 'Confirmed', 120.00),
-(502, 2, 101, 'A-13', 'Confirmed', 150.00),
+(503, 2, 101, 'A-13', 'Confirmed', 150.00),
 (504, 2, 101, 'NUll', 'NULL', 150.00), 
-(505, 3, 120, 'C-20', 'Pending', 120.00);
+(505, 3, 102, 'C-20', 'Pending', 120.00);
 
 
 //Query-1
 SELECT match_id, fixture, base_ticket_price FROM matches
-WHERE match_status = 'Available';
+WHERE tournament_category = 'Champions League' AND match_status = 'Available';
 
 //Query-2
 SELECT user_id, full_name, email FROM users
-WHERE full_name ILIKE 'Tanvir%' OR ILIKE '%Haque%';
+WHERE full_name ILIKE 'Tanvir%' OR full_name ILIKE '%Haque%';
 
 //Query-3
-SELECT booking_id, user_id, match_id
-COALESCE(payment_status, 'Action Required') AS systematic_status
+SELECT booking_id, user_id, match_id,
+COALESCE (payment_status, 'Action Required') AS systematic_status
 FROM bookings 
 WHERE payment_status IS NULL;
 
 
 //Query-4
 SELECT booking_id, full_name, fixture, total_cost FROM bookings
-INNER JOIN users ON booking_id = user_id
-INNER JOIN matches ON booking_id = match_id;
+INNER JOIN users ON bookings.user_id = users.user_id
+INNER JOIN matches ON bookings.match_id = matches.match_id;
